@@ -24,7 +24,7 @@ const tenToTwenty = {
   19: 'nineteen',
 };
 
-const dozens = {
+const tens = {
   2: 'twenty',
   3: 'thirty',
   4: 'forty',
@@ -35,36 +35,34 @@ const dozens = {
   9: 'ninety',
 };
 
-const convertDozens = (num) => {
+const convertTens = (num = '10') => {
   if (num[0] === '1') {
     return tenToTwenty[num];
   } else {
-    if (num[1] === '0') {
-      return dozens[num[0]];
-    } else {
-      return dozens[num[0]] + ' ' + units[num[1]];
-    }
+    return num[1] === '0' ? tens[num[0]] : `${tens[num[0]]} ${units[num[1]]}`;
   }
 };
 
-const convertHundreds = (num) => {
-  if (num[1] == 0 && num[2] == 0) {
-    return units[num[0]] + ' hundred';
-  } else if (num[1] == 0 && num[2] != 0) {
-    return units[num[0]] + ' hundred ' + units[num[2]];
+const convertHundreds = (num = '100') => {
+  const hundredString = units[num[0]] + ' hundred';
+
+  if (num.slice(1) === '00') {
+    return hundredString;
+  } else if (num[1] === '0' && num[2] !== '0') {
+    return hundredString + ' ' + units[num[2]];
   } else {
-    return units[num[0]] + ' hundred ' + convertDozens(num.slice(1));
+    return hundredString + ' ' + convertTens(num.slice(1));
   }
 };
 
 module.exports = function toReadable(number) {
-  const updatedNumber = number.toString();
+  const numberToString = number.toString();
 
-  if (updatedNumber.length === 1) {
-    return units[updatedNumber];
-  } else if (updatedNumber.length === 2) {
-    return convertDozens(updatedNumber);
-  } else if (updatedNumber.length === 3) {
-    return convertHundreds(updatedNumber);
+  if (numberToString.length === 1) {
+    return units[numberToString];
+  } else if (numberToString.length === 2) {
+    return convertTens(numberToString);
+  } else if (numberToString.length === 3) {
+    return convertHundreds(numberToString);
   }
 };
