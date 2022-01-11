@@ -1,5 +1,4 @@
-const units = {
-  0: 'zero',
+const oneToNineteen = {
   1: 'one',
   2: 'two',
   3: 'three',
@@ -9,9 +8,6 @@ const units = {
   7: 'seven',
   8: 'eight',
   9: 'nine',
-};
-
-const tenToTwenty = {
   10: 'ten',
   11: 'eleven',
   12: 'twelve',
@@ -35,34 +31,19 @@ const tens = {
   9: 'ninety',
 };
 
-const convertTens = (num = '10') => {
-  if (num[0] === '1') {
-    return tenToTwenty[num];
-  } else {
-    return num[1] === '0' ? tens[num[0]] : `${tens[num[0]]} ${units[num[1]]}`;
-  }
-};
-
-const convertHundreds = (num = '100') => {
-  const hundredString = units[num[0]] + ' hundred';
-
-  if (num.slice(1) === '00') {
-    return hundredString;
-  } else if (num[1] === '0' && num[2] !== '0') {
-    return hundredString + ' ' + units[num[2]];
-  } else {
-    return hundredString + ' ' + convertTens(num.slice(1));
-  }
-};
-
 module.exports = function toReadable(number) {
-  const numberToString = number.toString();
-
-  if (numberToString.length === 1) {
-    return units[numberToString];
-  } else if (numberToString.length === 2) {
-    return convertTens(numberToString);
-  } else if (numberToString.length === 3) {
-    return convertHundreds(numberToString);
+  if (number === 0) {
+    return 'zero';
+  } else if (number < 20) {
+    return oneToNineteen[number];
+  } else if (number < 100) {
+    const dec = tens[Math.floor(number / 10)];
+    return number % 10 === 0 ? dec : `${dec} ${toReadable(number % 10)}`;
+  } else if (number < 1000) {
+    const hundredsCount = Math.floor(number / 100);
+    const hundreds = oneToNineteen[hundredsCount];
+    return number % 100 === 0
+      ? `${hundreds} hundred`
+      : `${hundreds} hundred ${toReadable(number - hundredsCount * 100)}`;
   }
 };
